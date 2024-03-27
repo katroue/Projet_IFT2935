@@ -1,4 +1,3 @@
-/** 
 use master;
 GO
 
@@ -6,14 +5,15 @@ drop database if exists projet_base;
 
 create database projet_base;
 go
-**/
+
 
 use projet_base;
 go
 
-drop table if EXISTS SynonymeMotClé, AssociationMotClé, AjoutFichier, 
-Fichier, Membre, Thème, Administrateur, Utilisateur, MotClé, ContentReview, ContentRating;
+drop table if EXISTS Evaluation, Visionnement, AssociationMotClé, SynonymeMotClé, MotClé, AjoutFichier, 
+Fichier;
 go
+
 
 -- Création des tables -- 
 CREATE TABLE Utilisateur ( -- comprend admin et membre
@@ -70,14 +70,14 @@ CREATE TABLE AssociationMotClé (
     nom_fichier VARCHAR(255)
 );
 
-CREATE TABLE ContentView (
+CREATE TABLE Visionnement (
     id INT PRIMARY KEY IDENTITY(1,1),
     nom_fichier VARCHAR(255),
     view_date DATE,
     FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier)
 );
 
-CREATE TABLE ContentRating (
+CREATE TABLE Evaluation (
     id INT PRIMARY KEY IDENTITY(1,1),
     nom_fichier VARCHAR(255),
     rating INT,
@@ -258,6 +258,20 @@ INSERT INTO AssociationMotClé (mot_clé, nom_fichier) VALUES
 ('Education', 'cours_mathematiques.mp4'),
 ('Education', 'salle_classe.jpg');
 
+INSERT INTO Visionnement (nom_fichier, view_date) VALUES 
+('recette_chocolat.jpg', '2024-03-05'),
+('cuisine_italienne.mp4', '2024-03-07'),
+('routine_cardio.mp4', '2024-03-10'),
+('yoga_matinale.jpg', '2024-03-09'),
+('tutoriel_python.mp4', '2024-03-12'),
+('guide_jardinage.jpg', '2024-03-15'),
+('sketch_comique.mp4', '2024-03-20'),
+('affiche_film_comedie.jpg', '2024-03-21'),
+('documentaire_nature.mp4', '2024-03-22'),
+('histoire_ancienne.jpg', '2024-03-15');
+
+
+
 -- Requêtes -- 
 
 -- Donner le nom et le prénom et le nombre de fichiers ajoutés de tous les admins qui ont ajouté au moins 1 fichier vidéo
@@ -269,12 +283,9 @@ WHERE f.type = 'Video'
 GROUP BY a.id_admin, a.nom, a.prénom
 HAVING COUNT(*) > 1;
 
-SELECT * FROM Administrateur;
-
 -- Donner le nom des fichiers et le(s) nom et prénoms de l'utilisateur qui a ajouté le/les fichiers qui sont associé au mot clé 'Musique'
 SELECT 
-  COALESCE(A.nom, Me.nom) AS nom, 
-  COALESCE(A.prénom, Me.prénom) AS prénom, 
+  u.id_utilisateur,
   aj.nom_fichier
 FROM 
   MotClé m
@@ -282,26 +293,19 @@ JOIN
   AssociationMotClé am ON m.mot = am.mot_clé
 JOIN 
   AjoutFichier aj ON am.nom_fichier = aj.nom_fichier
-LEFT JOIN 
-  Administrateur A ON aj.id_utilisateur = A.id_admin AND (aj.id_utilisateur % 2) = 0
-LEFT JOIN 
-  Membre Me ON aj.id_utilisateur = Me.id_membre AND (aj.id_utilisateur % 2) <> 0
+JOIN 
+    Utilisateur u ON aj.id_utilisateur = u.id_utilisateur
 WHERE 
   m.mot = 'Musique'
 GROUP BY 
-  COALESCE(A.nom, Me.nom), 
-  COALESCE(A.prénom, Me.prénom), 
+  u.id_utilisateur,
   aj.nom_fichier;
 
-
-SELECT u.id_utilisateur, aj.nom_fichier
-FROM 
-  MotClé m
-JOIN 
-  AssociationMotClé am ON m.mot = am.mot_clé
-JOIN 
-  AjoutFichier aj ON am.nom_fichier = aj.nom_fichier
-JOIN 
-Utilisateur u ON aj.id_utilisateur = u.id_utilisateur
-WHERE m.mot = 'Musique'
-GROUP BY u.id_utilisateur, aj.nom_fichier;
+-- Donner le nom des fichiers, leurs date d'ajout, leurs date de visionnement, et les utilisateurs qui les ont ajoutés, des fichiers qui ont été visionnés entre le 2024-03-09 et le 2024-03-15
+SELECT v.view_date, f.nom_fichier, f.date_ajout, u.id_utilisateur
+FROM Visionnement v
+JOIN Fichier f ON f.nom_fichier = v.nom_fichier
+JOIN AjoutFichier aj ON aj.nom_fichier = f.nom_fichier
+JOIN Utilisateur u ON u.id_utilisateur = aj.id_utilisateur
+WHERE v.view_date BETWEEN '2024-03-09' AND '2024-03-15'
+GROUP BY f.nom_fichier, u.id_utilisateur, v.view_date, f.date_ajout;
