@@ -1,3 +1,4 @@
+/**
 use master;
 GO
 
@@ -5,13 +6,13 @@ drop database if exists projet_base;
 
 create database projet_base;
 go
-
+**/
 
 use projet_base;
 go
 
 drop table if EXISTS Evaluation, Visionnement, AssociationMotClé, SynonymeMotClé, MotClé, AjoutFichier, 
-Fichier;
+Fichier, Thème, Membre, Administrateur, Utilisateur;
 go
 
 
@@ -260,16 +261,93 @@ INSERT INTO AssociationMotClé (mot_clé, nom_fichier) VALUES
 
 INSERT INTO Visionnement (nom_fichier, view_date) VALUES 
 ('recette_chocolat.jpg', '2024-03-05'),
-('cuisine_italienne.mp4', '2024-03-07'),
+('recette_chocolat.jpg', '2024-03-07'),
+('recette_chocolat.jpg', '2024-03-08'),
+('cuisine_italienne.mp4', '2024-03-10'),
+('cuisine_italienne.mp4', '2024-03-12'),
+('routine_cardio.mp4', '2024-03-07'),
 ('routine_cardio.mp4', '2024-03-10'),
-('yoga_matinale.jpg', '2024-03-09'),
+('yoga_matinale.jpg', '2024-03-10'),
+('yoga_matinale.jpg', '2024-03-15'),
+('tutoriel_python.mp4', '2024-03-10'),
 ('tutoriel_python.mp4', '2024-03-12'),
+('tutoriel_python.mp4', '2024-03-14'),
+('tutoriel_python.mp4', '2024-03-15'),
+('guide_jardinage.jpg', '2024-03-10'),
 ('guide_jardinage.jpg', '2024-03-15'),
-('sketch_comique.mp4', '2024-03-20'),
-('affiche_film_comedie.jpg', '2024-03-21'),
-('documentaire_nature.mp4', '2024-03-22'),
-('histoire_ancienne.jpg', '2024-03-15');
+('sketch_comique.mp4', '2024-03-10'),
+('sketch_comique.mp4', '2024-03-15'),
+('affiche_film_comedie.jpg', '2024-03-17'),
+('documentaire_nature.mp4', '2024-03-12'),
+('documentaire_nature.mp4', '2024-03-17'),
+('histoire_ancienne.jpg', '2024-03-14'),
+('histoire_ancienne.jpg', '2024-03-18'),
+('histoire_ancienne.jpg', '2024-03-21'),
+('dessin_anime_enfant.mp4', '2024-03-15'),
+('dessin_anime_enfant.mp4', '2024-03-18'),
+('personnage_cartoon.jpg', '2024-03-15'),
+('personnage_cartoon.jpg', '2024-03-18'),
+('voyage_asie.mp4', '2024-03-16'),
+('voyage_asie.mp4', '2024-03-18'),
+('voyage_asie.mp4', '2024-03-18'),
+('voyage_asie.mp4', '2024-03-19'),
+('voyage_asie.mp4', '2024-03-19'),
+('paysage_montagne.jpg', '2024-03-20'),
+('concert_live.mp4', '2024-03-22'),
+('guitare_acoustique.jpg', '2024-03-20'),
+('guitare_acoustique.jpg', '2024-03-22'),
+('seance_yoga.mp4', '2024-03-20'),
+('seance_yoga.mp4', '2024-03-22'),
+('seance_yoga.mp4', '2024-03-25'),
+('seance_yoga.mp4', '2024-03-28'),
+('posture_meditation.jpg', '2024-03-22'),
+('posture_meditation.jpg', '2024-03-24'),
+('cours_mathematiques.mp4', '2024-03-22'),
+('cours_mathematiques.mp4', '2024-03-25'),
+('salle_classe.jpg', '2024-03-25'),
+('salle_classe.jpg', '2024-03-28');
 
+INSERT INTO Evaluation (nom_fichier, rating, id_utilisateur, rating_date) VALUES 
+('recette_chocolat.jpg', 4, 5, '2024-03-05'),
+('recette_chocolat.jpg', 3, 6, '2024-03-08'),
+('cuisine_italienne.mp4', 5, 2, '2024-03-10'),
+('cuisine_italienne.mp4', 2, 4, '2024-03-12'),
+('routine_cardio.mp4', 3, 7, '2024-03-07'),
+('routine_cardio.mp4', 4, 1, '2024-03-10'),
+('yoga_matinale.jpg', 5, 3, '2024-03-10'),
+('yoga_matinale.jpg', 3, 2, '2024-03-15'),
+('tutoriel_python.mp4', 4, 9, '2024-03-10'),
+('tutoriel_python.mp4', 5, 8, '2024-03-15'),
+('guide_jardinage.jpg', 3, 5, '2024-03-10'),
+('guide_jardinage.jpg', 2, 7, '2024-03-15'),
+('sketch_comique.mp4', 4, 2, '2024-03-10'),
+('sketch_comique.mp4', 5, 1, '2024-03-15'),
+('affiche_film_comedie.jpg', 4, 8, '2024-03-12'),
+('affiche_film_comedie.jpg', 2, 6, '2024-03-17'),
+('documentaire_nature.mp4', 5, 4, '2024-03-12'),
+('documentaire_nature.mp4', 3, 2, '2024-03-17'),
+('histoire_ancienne.jpg', 3, 10, '2024-03-14'),
+('histoire_ancienne.jpg', 2, 9, '2024-03-18'),
+('dessin_anime_enfant.mp4', 4, 2, '2024-03-15'),
+('dessin_anime_enfant.mp4', 5, 3, '2024-03-18'),
+('personnage_cartoon.jpg', 3, 5, '2024-03-15'),
+('personnage_cartoon.jpg', 2, 4, '2024-03-18'),
+('voyage_asie.mp4', 5, 1, '2024-03-16'),
+('voyage_asie.mp4', 4, 2, '2024-03-19'),
+('paysage_montagne.jpg', 3, 8, '2024-03-18'),
+('paysage_montagne.jpg', 2, 7, '2024-03-20'),
+('concert_live.mp4', 4, 6, '2024-03-20'),
+('concert_live.mp4', 5, 5, '2024-03-22'),
+('guitare_acoustique.jpg', 3, 4, '2024-03-20'),
+('guitare_acoustique.jpg', 2, 3, '2024-03-22'),
+('seance_yoga.mp4', 4, 2, '2024-03-20'),
+('seance_yoga.mp4', 5, 1, '2024-03-22'),
+('posture_meditation.jpg', 3, 10, '2024-03-22'),
+('posture_meditation.jpg', 2, 9, '2024-03-24'),
+('cours_mathematiques.mp4', 5, 8, '2024-03-22'),
+('cours_mathematiques.mp4', 4, 7, '2024-03-25'),
+('salle_classe.jpg', 3, 6, '2024-03-25'),
+('salle_classe.jpg', 2, 5, '2024-03-28');
 
 
 -- Requêtes -- 
@@ -284,22 +362,13 @@ GROUP BY a.id_admin, a.nom, a.prénom
 HAVING COUNT(*) > 1;
 
 -- Donner le nom des fichiers et le(s) nom et prénoms de l'utilisateur qui a ajouté le/les fichiers qui sont associé au mot clé 'Musique'
-SELECT 
-  u.id_utilisateur,
-  aj.nom_fichier
-FROM 
-  MotClé m
-JOIN 
-  AssociationMotClé am ON m.mot = am.mot_clé
-JOIN 
-  AjoutFichier aj ON am.nom_fichier = aj.nom_fichier
-JOIN 
-    Utilisateur u ON aj.id_utilisateur = u.id_utilisateur
-WHERE 
-  m.mot = 'Musique'
-GROUP BY 
-  u.id_utilisateur,
-  aj.nom_fichier;
+SELECT u.id_utilisateur, aj.nom_fichier
+FROM MotClé m
+JOIN AssociationMotClé am ON m.mot = am.mot_clé
+JOIN AjoutFichier aj ON am.nom_fichier = aj.nom_fichier
+JOIN Utilisateur u ON aj.id_utilisateur = u.id_utilisateur
+WHERE m.mot = 'Musique'
+GROUP BY u.id_utilisateur, aj.nom_fichier;
 
 -- Donner le nom des fichiers, leurs date d'ajout, leurs date de visionnement, et les utilisateurs qui les ont ajoutés, des fichiers qui ont été visionnés entre le 2024-03-09 et le 2024-03-15
 SELECT v.view_date, f.nom_fichier, f.date_ajout, u.id_utilisateur
@@ -309,3 +378,19 @@ JOIN AjoutFichier aj ON aj.nom_fichier = f.nom_fichier
 JOIN Utilisateur u ON u.id_utilisateur = aj.id_utilisateur
 WHERE v.view_date BETWEEN '2024-03-09' AND '2024-03-15'
 GROUP BY f.nom_fichier, u.id_utilisateur, v.view_date, f.date_ajout;
+
+-- Donner, pour tous les administrateurs, les noms et prénoms des membres et les noms des fichiers et leurs types qu'ils ont ajoutés
+SELECT a.id_admin, m.nom AS nom_membre, m.prénom AS prénom_membre, f.nom_fichier, f.type AS type_fichier
+FROM Administrateur a 
+JOIN Membre m ON a.id_admin = m.id_admin_ajout
+JOIN AjoutFichier af ON a.id_admin = af.id_utilisateur
+JOIN Fichier f ON af.nom_fichier = f.nom_fichier
+GROUP BY a.id_admin, m.nom, m.prénom, f.nom_fichier, f.type;
+
+-- Donner, pour tous les fichiers, le nombre de visionnement et la moyenne de leurs évaluations et l'id des utilisateurs qui l'a ajouté
+SELECT f.nom_fichier, COUNT(DISTINCT v.id) AS nombre_visionnement, AVG(e.rating) AS evaluation_moyenne, aj.id_utilisateur
+FROM Fichier f
+LEFT JOIN Visionnement v ON f.nom_fichier = v.nom_fichier
+LEFT JOIN Evaluation e ON f.nom_fichier = e.nom_fichier
+LEFT JOIN AjoutFichier aj ON f.nom_fichier = aj.nom_fichier
+GROUP BY f.nom_fichier, aj.id_utilisateur;
