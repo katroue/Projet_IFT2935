@@ -128,14 +128,14 @@ FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier);
 INSERT INTO Utilisateur (type) VALUES 
 ('Admin'),
 ('Membre'),
+('Admin'),
 ('Membre'),
 ('Admin'),
 ('Membre'),
-('Membre'),
 ('Admin'),
 ('Membre'),
-('Membre'),
-('Admin');
+('Admin'),
+('Membre');
 
 INSERT INTO Administrateur (id_admin, nom, prénom) VALUES 
 (1, 'Durand', 'Alice'),
@@ -191,7 +191,7 @@ INSERT INTO AjoutFichier (nom_fichier, id_utilisateur) VALUES
 ('sketch_comique.mp4', 1),
 ('affiche_film_comedie.jpg', 7),
 ('documentaire_nature.mp4', 9),
-('histoire_ancienne.jpg', 10),
+('histoire_ancienne.jpg', 7),
 ('dessin_anime_enfant.mp4', 2),
 ('personnage_cartoon.jpg', 6),
 ('voyage_asie.mp4', 3),
@@ -201,7 +201,7 @@ INSERT INTO AjoutFichier (nom_fichier, id_utilisateur) VALUES
 ('seance_yoga.mp4', 7),
 ('posture_meditation.jpg', 9),
 ('cours_mathematiques.mp4', 5),
-('salle_classe.jpg', 10);
+('salle_classe.jpg', 3);
 
 INSERT INTO MotClé (mot) VALUES
 ('Recette'),
@@ -309,13 +309,14 @@ INSERT INTO Visionnement (nom_fichier, view_date) VALUES
 
 INSERT INTO Evaluation (nom_fichier, rating, id_utilisateur, rating_date) VALUES 
 ('recette_chocolat.jpg', 4, 5, '2024-03-05'),
+('recette_chocolat.jpg', 1, 7, '2024-03-05'),
 ('recette_chocolat.jpg', 3, 6, '2024-03-08'),
 ('cuisine_italienne.mp4', 5, 2, '2024-03-10'),
 ('cuisine_italienne.mp4', 2, 4, '2024-03-12'),
-('routine_cardio.mp4', 3, 7, '2024-03-07'),
-('routine_cardio.mp4', 4, 1, '2024-03-10'),
+('routine_cardio.mp4', 5, 7, '2024-03-07'),
+('routine_cardio.mp4', 5, 1, '2024-03-10'),
 ('yoga_matinale.jpg', 5, 3, '2024-03-10'),
-('yoga_matinale.jpg', 3, 2, '2024-03-15'),
+('yoga_matinale.jpg', 3, 10, '2024-03-15'),
 ('tutoriel_python.mp4', 4, 9, '2024-03-10'),
 ('tutoriel_python.mp4', 5, 8, '2024-03-15'),
 ('guide_jardinage.jpg', 3, 5, '2024-03-10'),
@@ -328,22 +329,22 @@ INSERT INTO Evaluation (nom_fichier, rating, id_utilisateur, rating_date) VALUES
 ('documentaire_nature.mp4', 3, 2, '2024-03-17'),
 ('histoire_ancienne.jpg', 3, 10, '2024-03-14'),
 ('histoire_ancienne.jpg', 2, 9, '2024-03-18'),
-('dessin_anime_enfant.mp4', 4, 2, '2024-03-15'),
-('dessin_anime_enfant.mp4', 5, 3, '2024-03-18'),
+('dessin_anime_enfant.mp4', 1, 2, '2024-03-15'),
+('dessin_anime_enfant.mp4', 1, 3, '2024-03-18'),
 ('personnage_cartoon.jpg', 3, 5, '2024-03-15'),
 ('personnage_cartoon.jpg', 2, 4, '2024-03-18'),
 ('voyage_asie.mp4', 5, 1, '2024-03-16'),
 ('voyage_asie.mp4', 4, 2, '2024-03-19'),
-('paysage_montagne.jpg', 3, 8, '2024-03-18'),
-('paysage_montagne.jpg', 2, 7, '2024-03-20'),
+('paysage_montagne.jpg', 5, 8, '2024-03-18'),
+('paysage_montagne.jpg', 5, 7, '2024-03-20'),
 ('concert_live.mp4', 4, 6, '2024-03-20'),
 ('concert_live.mp4', 5, 5, '2024-03-22'),
 ('guitare_acoustique.jpg', 3, 4, '2024-03-20'),
 ('guitare_acoustique.jpg', 2, 3, '2024-03-22'),
 ('seance_yoga.mp4', 4, 2, '2024-03-20'),
 ('seance_yoga.mp4', 5, 1, '2024-03-22'),
-('posture_meditation.jpg', 3, 10, '2024-03-22'),
-('posture_meditation.jpg', 2, 9, '2024-03-24'),
+('posture_meditation.jpg', 1, 10, '2024-03-22'),
+('posture_meditation.jpg', 1, 9, '2024-03-24'),
 ('cours_mathematiques.mp4', 5, 8, '2024-03-22'),
 ('cours_mathematiques.mp4', 4, 7, '2024-03-25'),
 ('salle_classe.jpg', 3, 6, '2024-03-25'),
@@ -394,3 +395,37 @@ LEFT JOIN Visionnement v ON f.nom_fichier = v.nom_fichier
 LEFT JOIN Evaluation e ON f.nom_fichier = e.nom_fichier
 LEFT JOIN AjoutFichier aj ON f.nom_fichier = aj.nom_fichier
 GROUP BY f.nom_fichier, aj.id_utilisateur;
+
+-- Donner tous les noms et prénoms des membres qui n'ont pas ajouté de fichiers mais qui ont donné au moins une évaluation à un fichier
+SELECT m.nom, m.prénom, COUNT(e.id) AS Nombre_évaluation
+FROM Membre m 
+LEFT JOIN AjoutFichier aj ON m.id_membre = aj.id_utilisateur
+LEFT JOIN Evaluation e ON e.nom_fichier = aj.nom_fichier AND e.id_utilisateur = m.id_membre
+WHERE aj.nom_fichier IS NULL
+GROUP BY m.nom, m.prénom, aj.nom_fichier;
+
+-- Donner en ordre décroissant les fichiers selon leurs moyennes d'évaluation avec une précision de deux chiffres après la virgule
+SELECT e.nom_fichier, ROUND(AVG(CAST(e.rating AS DECIMAL(3,1))), 1) AS Moyenne_Evaluation
+FROM Evaluation e 
+GROUP BY e.nom_fichier
+ORDER BY Moyenne_Evaluation DESC;
+
+-- Donner, pour tous les utilisateurs, leurs types, leurs noms et prénoms
+SELECT u.id_utilisateur,u.type,
+  CASE WHEN u.type = 'Admin' THEN a.nom ELSE m.nom END AS nom,
+  CASE WHEN u.type = 'Admin' THEN a.prénom ELSE m.prénom END AS prénom
+FROM Utilisateur u
+LEFT JOIN Administrateur a ON u.id_utilisateur = a.id_admin AND u.type = 'Admin'
+LEFT JOIN Membre m ON u.id_utilisateur = m.id_membre AND u.type = 'Membre';
+
+-- Donner pour tous les synonymes d'un mot-clé, le mot-clé et le fichier correspondant
+SELECT s.synonyme, s.mot_clé, a.nom_fichier
+FROM SynonymeMotClé s 
+JOIN AssociationMotClé a ON s.mot_clé = a.mot_clé
+GROUP BY s.synonyme, s.mot_clé, a.nom_fichier;
+
+-- Donner pour tous les membres, le nom de famille des administrateurs qui les ont ajoutés
+SELECT m.id_membre, m.nom, m.prénom, a.nom as Admin_Ajout 
+FROM Membre m 
+JOIN Administrateur a ON m.id_admin_ajout = a.id_admin
+GROUP BY m.id_membre, m.nom, m.prénom, a.nom;
