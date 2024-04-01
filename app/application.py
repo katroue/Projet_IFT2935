@@ -2,15 +2,6 @@ from flask import Flask, render_template
 import pyodbc
 import os
 
-# conn_str = (
-#     "Driver=ODBC Driver 17 for SQL Server;" #version du driver odbc
-#     "Server=localhost;"                     #nom de l'instance 
-#     "Database=projet_base;"                    #nom de la BD 
-# 	"Encrypt=yes;"                         #chiffrer la connexion
-#     "TrustServerCertificate=yes;"          #remplacer par "no" quand vous installez un certificat valide sur le serveur SQL
-#     "UID=SA;"
-#     "PWD=14011Ada"
-# )
 
 
 def connect_to_db(driver, server, database, uid, passwd):
@@ -21,7 +12,7 @@ def connect_to_db(driver, server, database, uid, passwd):
         "Encrypt=yes;"                         #chiffrer la connexion
         "TrustServerCertificate=yes;"          #remplacer par "no" quand vous installez un certificat valide sur le serveur SQL
         f"UID={uid};"
-        f"PWD=14011Ada"
+        f"PWD={passwd}"
     )
     try:
         cnxn = pyodbc.connect(conn_str)
