@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Content Upload Trends</h5>
+                <div class="chart-container">
+                    <canvas id="uploadTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Most Viewed Videos</h5>
+                <div class="chart-container">
+                    <canvas id="mostViewedChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Average Video Ratings</h5>
+                <div class="chart-container">
+                    <canvas id="averageRatingsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Active User Engagement</h5>
+                <div class="chart-container">
+                    <canvas id="activeUsersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize your Chart.js charts here
+    // Replace the following JavaScript with your Chart.js initialization code
+
+    // Placeholder Data - Replace with data passed from Flask backend
+    // let uploadTrendsData = [10, 20, 30, 40, 50];
+    const uploadTrendsData = JSON.parse({{ upload_trends | tojson }});
+        
+    // Create arrays for labels and data
+    const labels = uploadTrendsData.map(entry => entry.date.split('-').pop());
+    const uploads = uploadTrendsData.map(entry => entry.uploads);
+
+    let averageRatingsData = [2, 3, 4, 5, 3];
+    let activeUsersData = [20, 30, 10, 40, 60];
+
+    // Parse the 'most_viewed' data passed from Flask
+    let mostViewedData = JSON.parse({{ most_viewed | tojson | safe }});
+
+    // Prepare the data for Chart.js
+    let videoTitles = mostViewedData.map(video => video.title);
+    let viewCounts = mostViewedData.map(video => video.views);
+
+    // Most Viewed Videos Chart
+    new Chart(document.getElementById('mostViewedChart'), {
+        type: 'bar', // Bar chart to display the most viewed videos
+        data: {
+            labels: videoTitles, // Video titles as labels
+            datasets: [{
+                label: 'Views',
+                data: viewCounts, // Number of views per video
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true // Ensure the scale starts from zero
+                    }
+                }]
+            },
+            responsive: true, // Ensure the chart is responsive
+            title: {
+                display: true,
+                text: 'Most Viewed Videos'
+            }
+        }
+    });
+
+    // Example initialization for Content Upload Trends
+    new Chart(document.getElementById('uploadTrendsChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Upload Trends',
+                backgroundColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgb(75, 192, 192)',
+                data: uploads,
+                fill: false,
+            }]
+        },
+        options: {
+            scales: {
+                y: { // Use 'y' instead of 'yAxes' for Chart.js version 3.x
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        // Convert to integer using callback; no need for userCallback
+                        callback: function(value) {
+                            if (Number.isInteger(value)) {
+                                return value;
+                            }
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Content Upload Trends'
+                },
+                legend: {
+                    display: false // Hide the legend if not needed
+                }
+            }
+        }
+    });
+
+    // Initialize other charts similarly...
+</script>
+{% endblock %}

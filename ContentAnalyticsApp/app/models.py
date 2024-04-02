@@ -1,4 +1,5 @@
 from app.db import get_db_connection
+from datetime import datetime
 
 def fetch_videos():
     conn = get_db_connection()
@@ -9,10 +10,38 @@ def fetch_videos():
     return videos
 
 def get_upload_trends():
-    pass
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT
+            DAY(date_ajout) AS UploadDay,
+            COUNT(*) AS NumberOfUploads
+        FROM Fichier
+        WHERE
+            type = 'Video'
+            AND MONTH(date_ajout) = 03
+            AND YEAR(date_ajout) = YEAR(GETDATE())
+        GROUP BY DAY(date_ajout)
+        ORDER BY DAY(date_ajout);
+    """)
+
+    uploads_by_day = cursor.fetchall()
+    print(uploads_by_day)
+    cursor.close()
+
+    current_year_month = datetime.now().strftime("%Y-%m")
+    upload_trends = [{"date": f"{current_year_month}-{row[0]:02d}", "uploads": row[1]} for row in uploads_by_day]
+    
+    return upload_trends
 
 def get_most_viewed():
-    pass
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('EXEC ViewCount')
+    data = cursor.fetchall()
+    view_counts = [{"title": row[0], "views": row[1]} for row in data]
+    cursor.close()
+    return view_counts
 
 def get_average_ratings():
     pass
