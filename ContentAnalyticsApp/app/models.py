@@ -44,7 +44,19 @@ def get_most_viewed():
     return view_counts
 
 def get_average_ratings():
-    pass
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('EXEC GetAverageVideoRatings')  
+    data = cursor.fetchall()
+    average_ratings = [{"title": row[0], "average_rating": row[1]} for row in data]
+    cursor.close()
+    return average_ratings
 
 def get_active_users():
-    pass
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("EXEC GetUserActivity")
+    data = cursor.fetchall()
+    user_activity = [{"Username": row[0], "RatingsCount": row[1], "UploadsCount": row[2]} for row in data]
+    cursor.close()
+    return user_activity

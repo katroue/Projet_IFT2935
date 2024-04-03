@@ -63,21 +63,28 @@
     const labels = uploadTrendsData.map(entry => entry.date.split('-').pop());
     const uploads = uploadTrendsData.map(entry => entry.uploads);
 
-    let averageRatingsData = [2, 3, 4, 5, 3];
-    let activeUsersData = [20, 30, 10, 40, 60];
+    const averageRatingsData = JSON.parse({{ average_ratings | tojson }});
+    let videoTitles_averageRatings = averageRatingsData.map(video => video.title)
+    let averageRatings = averageRatingsData.map(video => video.average_rating)
+
+
+    let userActivity = JSON.parse({{ user_activity | tojson | safe }});
+    let usernames = userActivity.map(u => u.Username);
+    let ratingsCounts = userActivity.map(u => u.RatingsCount);
+    let uploadsCounts = userActivity.map(u => u.UploadsCount);
 
     // Parse the 'most_viewed' data passed from Flask
     let mostViewedData = JSON.parse({{ most_viewed | tojson | safe }});
 
     // Prepare the data for Chart.js
-    let videoTitles = mostViewedData.map(video => video.title);
+    let videoTitles_mostViewed = mostViewedData.map(video => video.title);
     let viewCounts = mostViewedData.map(video => video.views);
 
     // Most Viewed Videos Chart
     new Chart(document.getElementById('mostViewedChart'), {
         type: 'bar', // Bar chart to display the most viewed videos
         data: {
-            labels: videoTitles, // Video titles as labels
+            labels: videoTitles_mostViewed, // Video titles as labels
             datasets: [{
                 label: 'Views',
                 data: viewCounts, // Number of views per video
@@ -88,7 +95,7 @@
         },
         options: {
             scales: {
-                yAxes: [{
+                y: [{
                     ticks: {
                         beginAtZero: true // Ensure the scale starts from zero
                     }
@@ -139,6 +146,64 @@
                 legend: {
                     display: false // Hide the legend if not needed
                 }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('averageRatingsChart'), {
+        type: 'bar',
+        data: {
+            labels: videoTitles_averageRatings, // Array of video titles
+            datasets: [{
+                label: 'Average Ratings',
+                data: averageRatings, // Array of average ratings corresponding to videoTitles
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: [{
+                    ticks: {
+                        beginAtZero: true, // This ensures the chart starts at 0
+                        stepSize: 1, // This sets the steps in the scale to be whole numbers
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: 'Average Video Ratings'
+            },
+            responsive: true,
+        }
+    });
+
+    new Chart(document.getElementById('activeUsersChart'), {
+        type: 'bar',
+        data: {
+            labels: usernames,
+            datasets: [
+                {
+                    label: 'Ratings Count',
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    data: ratingsCounts
+                },
+                {
+                    label: 'Uploads Count',
+                    backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                    data: uploadsCounts
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'User Activity - Ratings and Uploads'
+            },
+            scales: {
+                xAxes: [{ stacked: true }],
+                yAxes: [{ stacked: true }]
             }
         }
     });
