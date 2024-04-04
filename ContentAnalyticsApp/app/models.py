@@ -26,7 +26,6 @@ def get_upload_trends():
     """)
 
     uploads_by_day = cursor.fetchall()
-    print(uploads_by_day)
     cursor.close()
 
     current_year_month = datetime.now().strftime("%Y-%m")
