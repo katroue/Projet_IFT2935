@@ -1,11 +1,11 @@
 
-use master;
-GO
+-- use master;
+-- GO
 
-drop database if exists projet_base;
+-- drop database if exists projet_base;
 
-create database projet_base;
-go
+-- create database projet_base;
+-- go
 
 
 use projet_base;
@@ -160,7 +160,7 @@ INSERT INTO Thème (nom_thème, description, id_admin_ajout) VALUES
 
 INSERT INTO Fichier (nom_fichier, type, date_ajout) VALUES 
 ('recette_chocolat.jpg', 'Image', '2024-03-01'),
-('cuisine_italienne.mp4', 'Video', '2024-03-02'),
+('cuisine_italienne.mp4', 'Video', '2024-03-03'),
 ('routine_cardio.mp4', 'Video', '2024-03-03'),
 ('yoga_matinale.jpg', 'Image', '2024-03-04'),
 ('tutoriel_python.mp4', 'Video', '2024-03-05'),
@@ -175,9 +175,9 @@ INSERT INTO Fichier (nom_fichier, type, date_ajout) VALUES
 ('paysage_montagne.jpg', 'Image', '2024-03-14'),
 ('concert_live.mp4', 'Video', '2024-03-15'),
 ('guitare_acoustique.jpg', 'Image', '2024-03-16'),
-('seance_yoga.mp4', 'Video', '2024-03-17'),
+('seance_yoga.mp4', 'Video', '2024-03-15'),
 ('posture_meditation.jpg', 'Image', '2024-03-18'),
-('cours_mathematiques.mp4', 'Video', '2024-03-19'),
+('cours_mathematiques.mp4', 'Video', '2024-03-15'),
 ('salle_classe.jpg', 'Image', '2024-03-20');
 
 
@@ -439,3 +439,53 @@ BEGIN
     LEFT JOIN Visionnement v ON f.nom_fichier = v.nom_fichier
     GROUP BY f.nom_fichier
 END;
+GO
+
+CREATE OR ALTER FUNCTION GetAverageRating(@VideoName VARCHAR(255))
+RETURNS DECIMAL(3, 2)
+AS
+BEGIN
+    DECLARE @AverageRating DECIMAL(3, 2);
+
+    SELECT @AverageRating = AVG(CAST(rating AS DECIMAL(10,2)))
+    FROM Evaluation
+    WHERE nom_fichier = @VideoName;
+
+    RETURN @AverageRating;
+END;
+GO
+
+SELECT dbo.GetAverageRating('sketch_comique.mp4') AS AverageRating;
+GO
+
+CREATE OR ALTER PROCEDURE GetAverageVideoRatings
+AS
+BEGIN
+    SELECT 
+        nom_fichier AS VideoName,
+        AVG(rating) AS AverageRating
+    FROM Evaluation
+    GROUP BY nom_fichier
+    ORDER BY AverageRating DESC;
+END;
+GO
+
+EXEC GetAverageVideoRatings;
+GO
+
+CREATE OR ALTER PROCEDURE GetUserActivity
+AS
+BEGIN
+    SELECT 
+        u.pseudo AS Username,
+        COUNT(e.id) AS RatingsCount,
+        COUNT(a.nom_fichier) AS UploadsCount
+    FROM Membre u
+    LEFT JOIN Evaluation e ON u.id_membre = e.id_utilisateur
+    LEFT JOIN AjoutFichier a ON u.id_membre = a.id_utilisateur
+    GROUP BY u.pseudo;
+END;
+GO
+
+EXEC GetUserActivity;
+GO
