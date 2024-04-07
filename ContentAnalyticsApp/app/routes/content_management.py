@@ -1,5 +1,5 @@
 from flask import Blueprint
-from app.models import fetch_videos
+from ContentAnalyticsApp.app.models import fetch_videos
 
 content = Blueprint('content_management', __name__)
 

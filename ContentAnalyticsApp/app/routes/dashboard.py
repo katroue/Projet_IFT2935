@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, render_template
-from app.models import get_most_viewed, get_upload_trends, get_average_ratings, get_active_users
+from ContentAnalyticsApp.app.models import get_most_viewed, get_upload_trends, get_average_ratings, get_active_users
 
 dashboard = Blueprint('dashboard', __name__)
 

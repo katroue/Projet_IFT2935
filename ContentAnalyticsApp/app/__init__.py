@@ -3,7 +3,7 @@ from .db import init_app as init_db_app
 
 def create_app():
     app = Flask(__name__)
-
+    app.secret_key = 'IFT2935'
     from .routes.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
@@ -15,6 +15,6 @@ def create_app():
 
     app.config.from_object('config.Config')
     
-    init_db_app(app)  # Initialize the database app
+    init_db_app(app)
 
     return app

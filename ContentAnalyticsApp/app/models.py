@@ -1,6 +1,22 @@
-from app.db import get_db_connection
+from ContentAnalyticsApp.app.db import get_db_connection
 from datetime import datetime
 
+def get_members():
+    with get_db_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT courriel, pseudo FROM Membre')
+            return cursor.fetchall()
+
+def verify_member(email, password):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT pseudo FROM Membre WHERE courriel = ?', (email,))
+        member_data = cursor.fetchone()
+        if member_data:
+            stored_password = member_data[0]
+            return stored_password == password
+        else:
+            return False
 def fetch_videos():
     conn = get_db_connection()
     cursor = conn.cursor()
