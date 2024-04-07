@@ -6,20 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}WebTV Analytics{% endblock %}</title>
-    
 
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+    {% if user_is_authenticated %}
     <header>
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -36,19 +33,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('dashboard.show_dashboard') }}">Dashboard</a>
                     </li>
-                    {% if user_is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </li>
                 </ul>
             </div>
         </nav>
     </header>
+    {% else %}
+    <div class="jumbotron text-center">
+        <h1>Welcome to WebTV Analytics!</h1>
+        <p>Explore comprehensive TV analytics in one place.</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login to Start</a>
+    </div>
+    {% endif %}
 
     <main role="main" class="container mt-4">
         {% block content %}
@@ -66,7 +64,6 @@
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shcAHpcTPbanEgCuST6EY6GNEAY4GZGpG1yg" crossorigin="anonymous">
     </script>
 
-    <!-- Custom Scripts -->
     {% block scripts %}
     <!-- Custom scripts can be added by extending templates -->
     {% endblock %}
