@@ -1,4 +1,3 @@
-
 -- use master;
 -- GO
 
@@ -29,7 +28,7 @@ CREATE TABLE Administrateur (
 );
 
 CREATE TABLE Membre (
-    id_membre int primary key,
+    id_membre int primary key not null,
     pseudo VARCHAR(255) not null,
     nom VARCHAR(255),
     prénom VARCHAR(255),
@@ -39,19 +38,19 @@ CREATE TABLE Membre (
 );
 
 CREATE TABLE Thème (
-    nom_thème VARCHAR(255) primary key,
+    nom_thème VARCHAR(255) primary key not null,
     description VARCHAR(255),
     id_admin_ajout int 
 );
 
 CREATE TABLE Fichier (
-    nom_fichier VARCHAR(255) PRIMARY KEY,
+    nom_fichier VARCHAR(255) PRIMARY KEY not null,
     type VARCHAR(255),
     date_ajout DATE
 );
 
 CREATE TABLE AjoutFichier (
-    nom_fichier VARCHAR(255) primary key,
+    nom_fichier VARCHAR(255) primary key not null,
     id_utilisateur int
 );
 
