@@ -9,7 +9,7 @@ class Config(object):
         "SERVER=localhost;"
         "DATABASE=projet_base;"
         "UID=SA;"
-        "PWD=Password123;"
+        "PWD=14011Ada;"
         "Encrypt=yes;"
         "TrustServerCertificate=yes;"
     )

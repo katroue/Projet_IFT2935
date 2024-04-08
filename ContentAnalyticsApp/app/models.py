@@ -1,4 +1,4 @@
-from ContentAnalyticsApp.app.db import get_db_connection
+from app.db import get_db_connection
 from datetime import datetime
 
 def get_members():
@@ -17,13 +17,27 @@ def verify_member(email, password):
             return stored_password == password
         else:
             return False
-def fetch_videos():
+
+def fetch_content():
     conn = get_db_connection()
     cursor = conn.cursor()
+    cursor.execute("""INSERT INTO Fichier (nom_fichier, type, date_ajout) VALUES 
+                    ('recette_chocolat_2.jpg', 'Image', '2024-03-01');""")
     cursor.execute('SELECT * FROM Fichier')
-    videos = cursor.fetchall()
+    data = cursor.fetchall()
+    content = [{"file_name" : row[0]} for row in data]
     cursor.close()
-    return videos
+    return content
+
+
+def remove_content(file_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+        DELETE FROM Fichier where nom_fichier = ?;
+    """
+    cursor.execute(query, (file_id))
+    cursor.close()
 
 def get_upload_trends():
     conn = get_db_connection()
