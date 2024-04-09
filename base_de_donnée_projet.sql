@@ -74,7 +74,7 @@ CREATE TABLE Visionnement (
     id INT PRIMARY KEY IDENTITY(1,1),
     nom_fichier VARCHAR(255),
     view_date DATE,
-    FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier)
+    FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier) ON DELETE CASCADE
 );
 
 CREATE TABLE Evaluation (
@@ -83,7 +83,7 @@ CREATE TABLE Evaluation (
     rating INT,
     id_utilisateur INT,
     rating_date DATE,
-    FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier),
+    FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier) ON DELETE CASCADE,
     FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );
 
@@ -109,7 +109,8 @@ FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur);
 
 ALTER TABLE AjoutFichier
 ADD CONSTRAINT fk_id_nom_ficher_ajout
-FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier);
+FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier)
+ON DELETE CASCADE;
 
 ALTER TABLE SynonymeMotClé
 ADD CONSTRAINT fk_mot_clé_synonyme
@@ -121,7 +122,8 @@ FOREIGN KEY (mot_clé) REFERENCES MotClé(mot);
 
 ALTER TABLE AssociationMotClé
 ADD CONSTRAINT fk_nom_fichier_association
-FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier);
+FOREIGN KEY (nom_fichier) REFERENCES Fichier(nom_fichier)
+ON DELETE CASCADE;
 
 -- Enregistrements -- 
 INSERT INTO Utilisateur (type) VALUES 
@@ -487,4 +489,70 @@ END;
 GO
 
 EXEC GetUserActivity;
+GO
+
+
+CREATE TRIGGER trg_Membre_PreventEmailChange
+ON Membre
+INSTEAD OF UPDATE
+AS
+BEGIN
+    IF EXISTS (SELECT 1
+               FROM inserted i
+               INNER JOIN deleted d ON i.id_membre = d.id_membre
+               WHERE i.courriel <> d.courriel)
+    BEGIN
+        RAISERROR ('Modification of email (courriel) is not allowed.', 16, 1);
+        RETURN;
+    END
+    ELSE
+    BEGIN
+        UPDATE Membre
+        SET pseudo = i.pseudo,
+            nom = i.nom,
+            prénom = i.prénom,
+            courriel = i.courriel,
+            date_naissance = i.date_naissance,
+            id_admin_ajout = i.id_admin_ajout
+        FROM inserted i
+        WHERE Membre.id_membre = i.id_membre;
+    END
+END
+GO
+
+CREATE OR ALTER PROCEDURE FetchMemberDetails
+AS
+BEGIN
+    DECLARE @id_membre INT, 
+            @pseudo VARCHAR(255), 
+            @nom VARCHAR(255), 
+            @prenom VARCHAR(255), 
+            @courriel VARCHAR(255), 
+            @date_naissance DATE;
+
+    DECLARE membre_cursor CURSOR FOR
+        SELECT id_membre, pseudo, nom, prénom, courriel, date_naissance
+        FROM Membre;
+
+    OPEN membre_cursor;
+    FETCH NEXT FROM membre_cursor INTO @id_membre, @pseudo, @nom, @prenom, @courriel, @date_naissance;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SELECT 
+            'ID du membre: ' + CAST(@id_membre AS VARCHAR(10)) + CHAR(13) +
+            'Pseudo: ' + @pseudo + CHAR(13) +
+            'Nom: ' + ISNULL(@nom, 'Non spécifié') + CHAR(13) +
+            'Prénom: ' + ISNULL(@prenom, 'Non spécifié') + CHAR(13) +
+            'Courriel: ' + ISNULL(@courriel, 'Non spécifié') + CHAR(13) +
+            'Date de naissance: ' + CONVERT(VARCHAR, @date_naissance, 103) + CHAR(13) + 
+            '--------'
+        AS MemberDetails;
+
+        FETCH NEXT FROM membre_cursor INTO @id_membre, @pseudo, @nom, @prenom, @courriel, @date_naissance;
+    END;
+
+    CLOSE membre_cursor;
+    DEALLOCATE membre_cursor;
+END;
 GO

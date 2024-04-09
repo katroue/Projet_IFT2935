@@ -5,6 +5,8 @@
 {% block content %}
 <div class="py-5">
     <h2 class="mb-4">Manage Content</h2>
+
+
     <!-- Search form -->
     <form method="GET" action="{{ url_for('content_management.content_management') }}">
         <input class="form-control mb-3" name="search" type="text" placeholder="Search files..." value="{{ request.args.get('search', '') }}">
@@ -25,8 +27,42 @@
         {% endfor %}
     </ul>
 
-    <!-- Replace # with your actual route for adding files -->
-    <a href="#" class="btn btn-primary mt-3">Add New File</a>
+    <!-- Button to Open the Modal -->
+    <button id="addFileBtn" class="btn btn-primary mt-3" data-toggle="modal" data-target="#addFileModal">Add New File</button>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="addFileModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('content_management.add_file') }}" method="post">
+                        <div class="form-group">
+                            <label for="fileName">File Name:</label>
+                            <input type="text" class="form-control" id="fileName" name="fileName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileType">File Type:</label>
+                            <select class="form-control" id="fileType" name="fileType">
+                                <option>Video</option>
+                                <option>Image</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileKeywords">Keywords:</label>
+                            <textarea class="form-control" id="fileKeywords" name="fileKeywords" rows="3" placeholder="Entrer des mots clés séparés par virgule (e.g., nature, comédie)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add File</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
