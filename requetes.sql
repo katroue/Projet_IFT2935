@@ -80,3 +80,55 @@ FROM Membre m
 JOIN Administrateur a ON m.id_admin_ajout = a.id_admin
 GROUP BY m.id_membre, m.nom, m.prénom, a.nom;
 GO
+
+/* 
+  REQUÊTES UTILISÉES DANS LE PROJET (APPLICATION).
+  Ils peuvent être retrouvés dans le code python, mais les re voici  
+*/
+
+-- Pour avoir les membres
+SELECT courriel, pseudo FROM Membre;
+
+-- Chercher les details des membres
+EXEC FetchMemberDetails;
+
+-- Recuperer les fichiers afin de les afficher sur le site
+SELECT * FROM Fichier;
+
+-- Avec le nom de fichier recuperer d'un input dans le site, effectuer ceci '?' est un placeholder
+--DELETE FROM Fichier where nom_fichier = ?;
+
+-- En utilisant la fonctionnalité d'ajout de fichier dans le site, ajouter un fichier
+/* INSERT INTO Fichier (nom_fichier, type, date_ajout) VALUES
+            (?, ?, CONVERT(varchar, GETDATE(), 23)) */
+
+-- Encore pour la meme fonctionnalité d'ajout de fichier, si dans la description on passe un nouveau mot clé, l'ajouter dans la BD
+/* IF NOT EXISTS (SELECT 1 FROM MotClé WHERE mot = ?)
+            INSERT INTO MotClé (mot) VALUES (?); */
+
+-- De plus, une fois le mot clé et le fichier ajouté, on ajoute aussi l'association des deux
+/*  INSERT INTO AssociationMotClé (mot_clé, nom_fichier) VALUES
+    (?, ?); */
+
+-- Pour notre dashboard, on a une visualisation des publications du mois dernier (mars)
+SELECT
+    DAY(date_ajout) AS UploadDay,
+    COUNT(*) AS NumberOfUploads
+FROM Fichier
+WHERE
+    type = 'Video'
+    AND MONTH(date_ajout) = 03
+    AND YEAR(date_ajout) = YEAR(GETDATE())
+GROUP BY DAY(date_ajout)
+ORDER BY DAY(date_ajout);
+
+-- Pour une autre visualisation, on a le nombre de vues par publication
+EXEC ViewCount;
+
+-- Les evaluations moyennes des publications
+EXEC GetAverageVideoRatings
+
+-- Finalement, le degres d'activité des membres de WebTV
+EXEC GetUserActivity
+
+

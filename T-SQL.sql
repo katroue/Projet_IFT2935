@@ -1,3 +1,5 @@
+use projet_base;
+GO
 
 CREATE OR ALTER PROCEDURE ViewCount
 AS
@@ -59,7 +61,7 @@ EXEC GetUserActivity;
 GO
 
 
-CREATE TRIGGER trg_Membre_PreventEmailChange
+CREATE OR ALTER TRIGGER trg_Membre_PreventEmailChange
 ON Membre
 INSTEAD OF UPDATE
 AS
@@ -123,3 +125,9 @@ BEGIN
     DEALLOCATE membre_cursor;
 END;
 GO
+
+SELECT * FROM Fichier;
+
+SELECT * FROM MotClé;
+
+SELECT * FROM AssociationMotClé;

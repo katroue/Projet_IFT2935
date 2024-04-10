@@ -47,7 +47,7 @@ def remove_content(file_id):
 
 def add_content(file_name, file_type):
     try:
-        conn = get_db_connection()  # Make sure this function returns a connection object
+        conn = get_db_connection()  
         cursor = conn.cursor()
         query = """
             INSERT INTO Fichier (nom_fichier, type, date_ajout) VALUES
